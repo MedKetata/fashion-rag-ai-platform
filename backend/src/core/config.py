@@ -1,0 +1,49 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+PHOENIX_HOST = os.getenv("PHOENIX_HOST")
+PHOENIX_UI_PORT = os.getenv("PHOENIX_UI_PORT")
+PHOENIX_TRACE_PORT = os.getenv("PHOENIX_TRACE_PORT")
+PHOENIX_PROJECT_NAME = os.getenv("PHOENIX_PROJECT_NAME")
+OLLAMA_HOST = os.getenv("OLLAMA_HOST")
+OLLAMA_PORT = os.getenv("OLLAMA_PORT")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
+OLLAMA_URL = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}"
+CURRENT_MODEL = OLLAMA_MODEL
+
+PROMPT_TOKEN_COST = 10
+COMPLETION_TOKEN_COST = 10
+
+WEAVIATE_HOST = os.getenv("WEAVIATE_HOST")
+WEAVIATE_PORT = os.getenv("WEAVIATE_PORT")
+WEAVIATE_GRPC_PORT = os.getenv("WEAVIATE_GRPC_PORT")
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "3306")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_NAME = os.getenv("DB_NAME")
+
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
+JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES"))
+
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+ADMIN_FIRST_NAME = os.getenv("ADMIN_FIRST_NAME")
+ADMIN_LAST_NAME = os.getenv("ADMIN_LAST_NAME")
+
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+MONGO_DB = os.getenv("MONGO_DB")
+
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "")
+
+CORS_ORIGINS_LIST = (
+    CORS_ORIGINS.split(",") if CORS_ORIGINS else []
+)
+
+DATABASE_URL = (
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)

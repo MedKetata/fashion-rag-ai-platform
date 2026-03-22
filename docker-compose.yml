@@ -1,0 +1,167 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build: ./backend
+    image: ${BACKEND_IMAGE}
+    container_name: ${BACKEND_CONTAINER}
+    restart: unless-stopped
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_INTERNAL_PORT}" 
+
+    env_file:
+      - ./backend/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      weaviate:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - rag-network
+
+
+  frontend-user:
+    build: ./frontend-user
+    image: ${FRONT_USER_IMAGE}
+    container_name: ${FRONT_USER_CONTAINER}
+    restart: unless-stopped
+    ports:
+      - "${FRONT_USER_PORT}:${FRONT_INTERNAL_PORT}"
+    depends_on:
+      - backend
+    networks:
+      - rag-network
+
+
+  frontend-admin:
+    build: ./frontend-admin
+    image: ${FRONT_ADMIN_IMAGE}
+    container_name: ${FRONT_ADMIN_CONTAINER}
+    restart: unless-stopped
+    ports:
+      - "${FRONT_ADMIN_PORT}:${FRONT_INTERNAL_PORT}"
+    depends_on:
+      - backend
+    networks:
+      - rag-network
+
+
+  mongodb:
+    image: ${MONGO_IMAGE}
+    container_name: ${MONGO_CONTAINER}
+    restart: unless-stopped
+    ports:
+      - "${MONGO_PORT}:${MONGO_INTERNAL_PORT}"
+    volumes:
+      - ${MONGO_VOLUME}:${MONGO_DATA_PATH}
+    networks:
+      - rag-network
+
+
+  mysql:
+    image: ${MYSQL_IMAGE}
+    container_name: ${MYSQL_CONTAINER}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_INTERNAL_PORT}"
+    volumes:
+      - ${MYSQL_VOLUME}:${MYSQL_DATA_PATH}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - rag-network
+
+
+  weaviate:
+    image: ${WEAVIATE_IMAGE}
+    container_name: ${WEAVIATE_CONTAINER}
+    restart: unless-stopped
+    ports:
+      - "${WEAVIATE_PORT}:${WEAVIATE_INTERNAL_PORT}"
+      - "${WEAVIATE_GRPC_PORT}:${WEAVIATE_GRPC_INTERNAL_PORT}"
+    environment:
+      QUERY_DEFAULTS_LIMIT: ${WEAVIATE_QUERY_LIMIT}
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: ${WEAVIATE_ANON_ACCESS}
+      PERSISTENCE_DATA_PATH: ${WEAVIATE_DATA_PATH}
+      DEFAULT_VECTORIZER_MODULE: ${WEAVIATE_VECTORIZER}
+      ENABLE_MODULES: text2vec-transformers
+      TRANSFORMERS_INFERENCE_API: http://text2vec-transformers:8080
+      CLUSTER_HOSTNAME: "node1"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/v1/.well-known/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    volumes:
+      - ${WEAVIATE_VOLUME}:${WEAVIATE_DATA_PATH}
+    networks:
+      - rag-network
+
+  text2vec-transformers:
+    image: cr.weaviate.io/semitechnologies/transformers-inference:sentence-transformers-multi-qa-MiniLM-L6-cos-v1
+    container_name: text2vec-transformers
+    restart: unless-stopped
+    environment:
+      ENABLE_CUDA: 0
+    networks:
+      - rag-network
+  ollama:
+    build: ./docker/ollama
+    container_name: ${OLLAMA_CONTAINER}
+    restart: unless-stopped
+
+    ports:
+      - "${OLLAMA_PORT}:${OLLAMA_INTERNAL_PORT}"
+
+    volumes:
+      - ${OLLAMA_VOLUME}:${OLLAMA_DATA_PATH}
+
+    networks:
+      - rag-network
+
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    container_name: rag-phoenix
+    restart: unless-stopped
+    expose:
+      - "${PHOENIX_PORT}"
+    networks:
+      - rag-network
+
+  nginx:
+    image: nginx:latest
+    container_name: rag-nginx
+    ports:
+      - "${NGINIX_PORT}:${NGINIX_INTERNAL_PORT}"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - phoenix
+    networks:
+      - rag-network
+volumes:
+  mongo_data:
+  mysql_data:
+  weaviate_data:
+  ollama_data:
+
+
+networks:
+  rag-network:
+  
