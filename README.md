@@ -89,10 +89,11 @@ The project combines:
   <img src="screenshots/RAG_Pipeline_Architecture.png" alt="RAG Pipeline Architecture" width="900">
 </p>
 
+---
+
 ## 📂 Project Structure
 
 ```bash
-
 RAG_Ecommerce/
 │
 ├── backend/
@@ -127,6 +128,8 @@ RAG_Ecommerce/
 ├── .env
 ├── screenshots/
 └── README.md
+
+```
 
 ## 🧠 Backend Logic
 
