@@ -226,7 +226,7 @@ If the query is product-related, it also classifies the task as:
 </p>
 
 <p align="center">
-  <img src="screenshots/FAQ_Response.png" alt="FAQ Response" width="850">
+  <img src="screenshots/faq_Response.png" alt="FAQ Response" width="850">
 </p>
 
 ### Product Query
@@ -249,7 +249,7 @@ If the query is product-related, it also classifies the task as:
 
 ### Model Management
 <p align="center">
-  <img src="screenshots/Manage_Models.png" alt="Manage Models" width="850">
+  <img src="screenshots/manage_models.png" alt="Manage Models" width="850">
 </p>
 
 <p align="center">
@@ -270,7 +270,7 @@ If the query is product-related, it also classifies the task as:
 
 ### Cost Management
 <p align="center">
-  <img src="screenshots/Manage_Model_Costs.png" alt="Manage Model Costs" width="850">
+  <img src="screenshots/manage_model_costs.png" alt="Manage Model Costs" width="850">
 </p>
 
 ### Monitoring
