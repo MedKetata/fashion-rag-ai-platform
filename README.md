@@ -226,7 +226,7 @@ If the query is product-related, it also classifies the task as:
 </p>
 
 <p align="center">
-  <img src="screenshots/faq_Response.png" alt="FAQ Response" width="850">
+  <img src="screenshots/faq_response.png" alt="FAQ Response" width="850">
 </p>
 
 ### Product Query
